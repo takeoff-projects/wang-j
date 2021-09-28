@@ -3,21 +3,12 @@ locals {
 	root_dir = abspath("../")
 }
 
-terraform {
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "3.5.0"
-    }
-  }
-}
-
 provider "google" {
   credentials = file("roi-takeoff-user44-0682ff3fdc4f.json")
 
-  project = "roi-takeoff-user44"
-  region  = "us-central1"
-  zone    = "us-central1-c"
+  project = var.google_project
+  region  = var.google_region
+  zone    = var.google_zone
 }
 
 # Topic and subscription
@@ -33,19 +24,21 @@ data "archive_file" "ms_code_zip" {
 }
 
 resource "google_storage_bucket" "ms_code_bucket" {
-  name = "message-store-code-bucket"
+  provider = google
+  name     = "message-store-code-bucket"
 }
-
 resource "google_storage_bucket_object" "ms_code" {
-  # Append file MD5 to force bucket to be recreated   name   = "source.zip#${data.archive_file.source.output_md5}"
-  name   = "message-store-code"
-  bucket = google_storage_bucket.ms_code_bucket.name
-  source = data.archive_file.ms_code_zip.output_path
+  provider = google
+  # Append file MD5 to force bucket to be recreated   
+  name   = "ms.zip#${data.archive_file.ms_code_zip.output_md5}"
+  bucket   = google_storage_bucket.ms_code_bucket.name
+  source   = data.archive_file.ms_code_zip.output_path
 }
 
 resource "google_cloudfunctions_function" "osr_import_func" {
-  name    = "osr-import-tracker"
-  runtime = "go113"
+  provider = google
+  name     = "osr-import-tracker"
+  runtime  = "go113"
 
   available_memory_mb   = 128
   source_archive_bucket = google_storage_bucket.ms_code_bucket.name

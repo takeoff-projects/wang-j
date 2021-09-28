@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"datastore","Source":"terraform-google-modules/cloud-datastore/google","Version":"1.0.0","Dir":".terraform/modules/datastore"}]}

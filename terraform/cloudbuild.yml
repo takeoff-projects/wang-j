@@ -1,0 +1,20 @@
+resource "google_cloudfunctions_function" "osr_import_function" {
+  name        = "osr-import-tracker"
+  description = "Function to read OSR Import messages"
+  runtime     = "go113"
+
+  available_memory_mb   = 128
+  timeout               = 60
+  entry_point           = "main"
+  
+  // Unable to link a google cloud source repository with github in terraform, needs to be done via API or console
+
+  event_trigger {
+    event_type = "google.pubsub.topic.publish"
+    resource = google_pubsub_topic.osr_import_topic.name
+  }
+
+  environment_variables = {
+    MY_ENV_VAR = "my-env-var-value"
+  }
+}

@@ -1,0 +1,22 @@
+swagger: '2.0'
+info:
+  title: message_store_endpoints
+  description: Sample API on API Gateway with a Google Cloud Functions backend
+  version: 1.0.0
+host: "ms-api.endpoints.roi-takeoff-user44.cloud.goog"
+schemes:
+  - https
+produces:
+  - application/json
+paths:
+  /import-messages:
+    get:
+      summary: Get all import messages
+      operationId: messages
+      x-google-backend:
+        address: https://us-central1-roi-takeoff-user44.cloudfunctions.net/import-message-getter
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string

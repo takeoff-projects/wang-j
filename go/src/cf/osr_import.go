@@ -4,7 +4,10 @@ import (
     "time"
     "context"
     "google.golang.org/api/pubsub/v1"
-
+	"net/http"
+    "encoding/json"
+    "io"
+    "html"
     firebase "firebase.google.com/go"
   )
 
@@ -30,4 +33,27 @@ func ProcessOsrImport(ctx context.Context, body pubsub.PubsubMessage) error {
     defer client.Close()
 
     return nil
+}
+
+func GetOsrImportMessages(w http.ResponseWriter, r *http.Request) {
+	var d struct {
+		Message string `json:"message"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+		switch err {
+		case io.EOF:
+			fmt.Fprint(w, "Hello World!")
+			return
+		default:
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+	}
+
+	if d.Message == "" {
+		fmt.Fprint(w, "Hello World!")
+		return
+	}
+	fmt.Fprint(w, html.EscapeString(d.Message))
 }

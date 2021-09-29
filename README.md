@@ -1,0 +1,11 @@
+Things that were done manually (outside of terraform)
+- Enabling APIs (ran into issues with repeated activations so it was removed)
+  - cloud function
+  - firestore
+  - cloud storage
+  - apigateway.googleapis.com
+  - servicemanagement.googleapis.com
+  - servicecontrol.googleapis.com	
+- Inital provisioning of Firestore DB (same reason as above)
+- Setting up service account for terraform to use (should've been included in a script probablyh)
+- Downloadng all the go.mod/sum stuff (I don't think this matters for the runtime of the cloud function at all)

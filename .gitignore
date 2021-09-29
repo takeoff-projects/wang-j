@@ -7,7 +7,8 @@
 # GO folders that don't need to be needed
 go/pkg/*
 go/bin/*
-
+# Terraform zipped code to upload
+terraform/*.zip
 # Test binary, built with `go test -c`
 *.test
 

@@ -10,5 +10,5 @@ variable "google_region" {
 
 variable "google_zone" {
   type    = string
-  default = "us-central1"
+  default = "us-central1-c"
 }

@@ -1,11 +1,12 @@
 package petsdb
 
 import (
-	
+	"net/http"
 	"context"
 	"fmt"
 	"log"
 	"os"
+	"io/ioutil"
 	"google.golang.org/api/iterator"
 	firebase "firebase.google.com/go"
 )
@@ -50,6 +51,15 @@ func GetPets() ([]Message, error) {
       doc.DataTo(&m)
       messages = append(messages, Message{Timestamp: m["timestamp"], Message: m["message"]})
   }
+	// TODO: Add errors.... And probably auth with secrets?
+
 	client.Close()
 	return messages, nil
+}
+
+// TODO: JSON deserialize into struct
+func GetMessages() string {
+	httpResp, _ := http.Get("https://us-central1-roi-takeoff-user44.cloudfunctions.net/import-message-getter")
+	httpBody, _ := ioutil.ReadAll(httpResp.Body)
+	return string(httpBody)
 }

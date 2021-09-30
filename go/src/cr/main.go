@@ -68,8 +68,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
+
+	pubsubResp := petsdb.GetMessages()
+
 	data := AboutPageData{
 		PageTitle: "About Go Pets",
+		Messages: pubsubResp,
 	}
 
 	var tpl = template.Must(template.ParseFiles("templates/about.html", "templates/layout.html"))
@@ -95,5 +99,6 @@ type HomePageData struct {
 // AboutPageData for About template
 type AboutPageData struct {
 	PageTitle string
+	Messages  string
 }
 

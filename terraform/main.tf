@@ -109,6 +109,7 @@ resource "docker_image" "ms_ui" {
   build {
     path = "../"
     dockerfile  = "./Dockerfile"
+    no_cache = false
     # This is just to refresh the docker image so it builds on push
     label = {"timestamp": timestamp()}
     build_arg = {
@@ -137,7 +138,7 @@ resource "google_cloud_run_service" "ms_web_ui" {
   template {
     spec {
       containers {
-        image = "${docker_image.ms_ui.repo_digest}"
+        image = docker_image.ms_ui.repo_digest
         env {
           name = "GOOGLE_CLOUD_PROJECT"
           value = var.google_project

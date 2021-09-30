@@ -3,29 +3,38 @@ import (
     "fmt"
     "time"
     "context"
-    "google.golang.org/api/pubsub/v1"
-	"net/http"
     "encoding/json"
-    "io"
-    "html"
+	"net/http"
+    "google.golang.org/api/iterator"
+    "google.golang.org/api/pubsub/v1"
+    b64 "encoding/base64"
     firebase "firebase.google.com/go"
   )
+
+type Message struct {
+	Timestamp string
+	Message   string
+}
 
 func ProcessOsrImport(ctx context.Context, body pubsub.PubsubMessage) error {
     conf := &firebase.Config{ProjectID: "roi-takeoff-user44"}
     app, appErr := firebase.NewApp(ctx, conf)
+    // TODO: Actually error
     if appErr != nil {
-        fmt.Print(appErr)
+        fmt.Println("App Error")
+        fmt.Println(appErr)
     }
 
-    client, firestoreErr := app.Firestore(ctx)
-    if firestoreErr != nil {
-        fmt.Print(firestoreErr)
+    client, clientErr := app.Firestore(ctx)
+    if clientErr != nil {
+        fmt.Println("Client Error")
+        fmt.Println(clientErr)
     }
-
+    decodedBody, _ := b64.StdEncoding.DecodeString(body.Data)
+    // TODO: Figure out why this doesn't like a struct
     _, _, collectionErr := client.Collection("import_messages").Add(ctx, map[string]string{
-        "timestamp": time.Now().Format(time.RFC822Z),
-        "message": body.Data,
+        "Timestamp": time.Now().Format(time.RFC822Z),
+        "Message": string(decodedBody),
     })
     if collectionErr != nil {
         fmt.Print(collectionErr)
@@ -36,24 +45,35 @@ func ProcessOsrImport(ctx context.Context, body pubsub.PubsubMessage) error {
 }
 
 func GetOsrImportMessages(w http.ResponseWriter, r *http.Request) {
-	var d struct {
-		Message string `json:"message"`
-	}
+    ctx := context.Background()
+    conf := &firebase.Config{ProjectID: "roi-takeoff-user44"}
+	var messages []map[string]string
 
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		switch err {
-		case io.EOF:
-			fmt.Fprint(w, "Hello World!")
-			return
-		default:
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
-		}
-	}
+    app, appErr := firebase.NewApp(ctx, conf)
+    if appErr != nil {
+        fmt.Println("App Error")
+        fmt.Println(appErr)
+    }
 
-	if d.Message == "" {
-		fmt.Fprint(w, "Hello World!")
-		return
-	}
-	fmt.Fprint(w, html.EscapeString(d.Message))
+    client, clientErr := app.Firestore(ctx)
+    if clientErr != nil {
+        fmt.Println("Client Error")
+        fmt.Println(clientErr)
+    }
+
+    iter := client.Collection("import_messages").Documents(ctx)
+    defer iter.Stop()
+    for {
+        doc, err := iter.Next()
+        if err == iterator.Done {
+            break
+        }
+        var m map[string]string
+        doc.DataTo(&m)
+        messages = append(messages, m)
+    }
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(messages)
+    defer client.Close()
 }

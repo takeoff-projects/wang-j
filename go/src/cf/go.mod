@@ -5,6 +5,7 @@ go 1.15
 require (
 	cloud.google.com/go v0.95.0 // indirect
 	cloud.google.com/go/firestore v1.6.0
+	firebase.google.com/go v3.13.0+incompatible
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	golang.org/x/net v0.0.0-20210928044308-7d9f5e0b762b // indirect
 	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect

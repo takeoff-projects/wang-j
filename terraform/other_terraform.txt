@@ -1,0 +1,68 @@
+# Backend Bucket for Web UI + Load balancer
+# resource "google_storage_bucket" "ui_bucket" {
+#   provider = google
+#   name     = "message-store-ui-bucket"
+# }
+# resource "google_compute_backend_bucket" "ui_backend" {
+#   name        = "message-store-ui-backend-bucket"
+#   description = "Contains web UI for message store"
+#   bucket_name = google_storage_bucket.ui_bucket.name
+#   enable_cdn  = true
+# }
+
+# resource "google_storage_bucket_object" "ui_code" {
+#   provider = google
+#   # Append file MD5 to force bucket to be recreated   
+#   name     = "ms_ui#${data.archive_file.ms_code_zip.output_md5}/"
+#   bucket   = google_storage_bucket.ui_bucket.name
+#   source   = "${local.root_dir}/frontend/"
+# }
+
+# module "gce-lb-http" {
+#   source         = "GoogleCloudPlatform/lb-http/google"
+#   version        = "~> 4.4"
+#   https_redirect = true
+#   project        = var.google_project
+#   name           = "message-store-ui-lb"
+#   backends = {
+#     default = {
+#       description                     = "Message store endpoints"
+#       protocol                        = "HTTP"
+#       port                            = 443
+#       port_name                       = "message_store"
+#       timeout_sec                     = 10
+#       enable_cdn                      = false
+#       custom_request_headers          = null
+#       custom_response_headers         = null
+#       security_policy                 = null
+
+#       connection_draining_timeout_sec = null
+#       session_affinity                = null
+#       affinity_cookie_ttl_sec         = null
+
+#       health_check = {
+#         check_interval_sec  = null
+#         timeout_sec         = null
+#         healthy_threshold   = null
+#         unhealthy_threshold = null
+#         request_path        = "/"
+#         port                = 443
+#         host                = null
+#         logging             = null
+#       }
+
+#       log_config = {
+#         enable = true
+#         sample_rate = 1.0
+#       }
+
+#       groups = []
+
+#       iap_config = {
+#         enable               = false
+#         oauth2_client_id     = null
+#         oauth2_client_secret = null
+#       }
+#     }
+#   }
+# }

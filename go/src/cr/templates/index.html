@@ -1,0 +1,24 @@
+{{template "layout" .}}
+
+{{define "content"}}
+
+<div class="container">
+    <hr />
+    <div class="row">
+        <!--Card-->
+        {{range .Messages}}
+        <div class="col-lg-4 col-md-12 mb-4">
+            <div class="card">
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <h4 class="card-title">{{.Timestamp}}</h4>
+                    <!--Text-->
+                    <p class="card-text">{{.Message}}</p>
+                </div>
+            </div>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}

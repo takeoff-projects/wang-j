@@ -20,3 +20,4 @@ terraform/*.zip
 
 # Key
 roi-takeoff-user44-*.json
+config.json
